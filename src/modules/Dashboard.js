@@ -1,10 +1,14 @@
 import React from "react";
-
-// import { useTokenBalance, useEthers } from "@usedapp/core";
-
 import { ethers } from "ethers";
 
-class FUCKSToken extends React.Component {
+import DataBridge from "../helpers/DataBridge";
+import Safe from "./Safe";
+
+
+class Dashboard extends React.Component {
+  fucksapp = window.fucksapp;
+  databridge = this.fucksapp.databridge;
+  
   constructor(props) {
     super(props);
     const TOKEN_ADDRESS = "0xBDA762F6f8f093949A68f98d2a4b0C79CA6008c8";
@@ -21,61 +25,29 @@ class FUCKSToken extends React.Component {
       "event Transfer(address indexed _from, address indexed _to, uint256 _value)",
       "event Approval(address indexed _owner, address indexed _spender, uint256 _value)",
     ];
-    const wallet = new ethers.providers.Web3Provider(window.ethereum);
+
     this.state = {
       TOKEN_ADDRESS,
-      wallet,
-      fucksContract: new ethers.Contract(TOKEN_ADDRESS, abi, wallet),
+      fucksContract: new ethers.Contract(TOKEN_ADDRESS, abi, this.fucksapp.wallet),
       fucksDetails: {},
     };
-    // web3 = new Web3(Web3.givenProvider);
 
-    this.syncCurrentAccountInWallet = this.syncCurrentAccountInWallet.bind(this);
-    this.getWalletConnectionStatus = this.getWalletConnectionStatus.bind(this);
-    this.getWalletAccount = this.getWalletAccount.bind(this);
-    this.connectWallet = this.connectWallet.bind(this);
+    this.handleAccountChange = this.handleAccountChange.bind(this);
+    this.getBasicDetails = this.getBasicDetails.bind(this);
     this.transferToken = this.transferToken.bind(this);
     this.renderAccount = this.renderAccount.bind(this);
+    this.renderDashboard = this.renderDashboard.bind(this);
   }
 
   componentDidMount() {
-    this.init();
-  }
-
-  async init() {
-    this.syncCurrentAccountInWallet();
-    this.setState({
-      fucks: this.state.wallet,
-    });
-  }
-
-  async syncCurrentAccountInWallet() {
-    setInterval(async () => {
-      await this.getWalletConnectionStatus(this.state.account);
-    }, 1000);
-  }
-
-  async getWalletConnectionStatus(_account) {
-    const account = await this.getWalletAccount();
-    if (_account != account) {
-      this.setState({ account });
-      this.handleAccountChange(account, _account);
+    this.databridge.sub(DataBridge.TOPIC.ACCOUNT_CHANGE, this.handleAccountChange);
+    if(this.fucksapp.account) {
+      this.handleAccountChange()
     }
-    return account;
   }
 
-  async handleAccountChange(account, prevAccount) {
+  async handleAccountChange() {
     await this.getBasicDetails();
-  }
-
-  async connectWallet() {
-    const accounts = await this.state.wallet.send("eth_requestAccounts", []);
-    this.setState({ account: accounts[0] });
-    return accounts[0];
-  }
-
-  async getWalletAccount() {
-    return (await this.state.wallet.listAccounts())[0];
   }
 
   async getBasicDetails() {
@@ -83,7 +55,7 @@ class FUCKSToken extends React.Component {
     const decimals = parseInt((await this.state.fucksContract.decimals()).toString());
     const symbol = (await this.state.fucksContract.symbol()).toString();
     const totalSupply = (await this.state.fucksContract.totalSupply()).toString();
-    const balance = (await this.state.fucksContract.balanceOf(this.state.account)).div(10 ** decimals).toString();
+    const balance = (await this.state.fucksContract.balanceOf(this.fucksapp.account)).div(10 ** decimals).toString();
     this.setState({ balance, fucksDetails: { name, symbol, decimals, totalSupply: totalSupply.toString() } });
     return balance;
   }
@@ -111,12 +83,13 @@ class FUCKSToken extends React.Component {
     );
   }
 
-  render() {
+  renderDashboard() {
     return (
       <div>
+        <Safe />
         <h1>{this.state.fucksDetails.name}</h1>
         <h2>({this.state.fucksDetails.symbol})</h2>
-        <h1>{this.state.account ? this.renderAccount() : <button onClick={this.connectWallet}>Connect MetaMask</button>}</h1>
+        <h1>{this.renderAccount()}</h1>
         <div>
           <h1>Details</h1>
           <div>
@@ -136,6 +109,10 @@ class FUCKSToken extends React.Component {
       </div>
     );
   }
+
+  render() {
+    return <div>{this.renderDashboard()}</div>;
+  }
 }
 
-export default FUCKSToken;
+export default Dashboard;
