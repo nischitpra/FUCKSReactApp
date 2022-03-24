@@ -4,11 +4,10 @@ import { ethers } from "ethers";
 import DataBridge from "../helpers/DataBridge";
 import Safe from "./Safe";
 
-
 class Dashboard extends React.Component {
   fucksapp = window.fucksapp;
   databridge = this.fucksapp.databridge;
-  
+
   constructor(props) {
     super(props);
     const TOKEN_ADDRESS = "0xBDA762F6f8f093949A68f98d2a4b0C79CA6008c8";
@@ -25,30 +24,40 @@ class Dashboard extends React.Component {
       "event Transfer(address indexed _from, address indexed _to, uint256 _value)",
       "event Approval(address indexed _owner, address indexed _spender, uint256 _value)",
     ];
-
-    this.state = {
+    this.initialState = {
       TOKEN_ADDRESS,
       fucksContract: new ethers.Contract(TOKEN_ADDRESS, abi, this.fucksapp.wallet),
       fucksDetails: {},
+      balance: undefined,
     };
 
-    this.handleAccountChange = this.handleAccountChange.bind(this);
+    this.state = { ...this.initialState };
+
+    this.resetState = this.resetState.bind(this);
+    // this.handleAccountChange = this.handleAccountChange.bind(this);
     this.getBasicDetails = this.getBasicDetails.bind(this);
     this.transferToken = this.transferToken.bind(this);
     this.renderAccount = this.renderAccount.bind(this);
     this.renderDashboard = this.renderDashboard.bind(this);
   }
 
-  componentDidMount() {
-    this.databridge.sub(DataBridge.TOPIC.ACCOUNT_CHANGE, this.handleAccountChange);
-    if(this.fucksapp.account) {
-      this.handleAccountChange()
-    }
+  resetState() {
+    this.setState({ ...this.initialState });
   }
 
-  async handleAccountChange() {
-    await this.getBasicDetails();
+  componentDidMount() {
+    // this.databridge.sub(DataBridge.TOPIC.ACCOUNT_CHANGE, this.handleAccountChange);
+    // if (this.fucksapp.account) {
+    //   this.handleAccountChange();
+    // }
+
+    this.getBasicDetails();
   }
+
+  // async handleAccountChange() {
+  //   this.resetState();
+  //   await this.getBasicDetails();
+  // }
 
   async getBasicDetails() {
     const name = (await this.state.fucksContract.name()).toString();
@@ -65,7 +74,7 @@ class Dashboard extends React.Component {
     const tokenAmount = document.getElementById("token_amount").value;
     const unsingedTxn = await this.state.fucksContract.populateTransaction.transfer(receiverAddress, tokenAmount);
     console.log(receiverAddress, tokenAmount);
-    const res = await this.state.wallet.getSigner().sendTransaction(unsingedTxn);
+    const res = await this.fucksapp.wallet.getSigner().sendTransaction(unsingedTxn);
     console.log(res);
   }
 
@@ -74,11 +83,20 @@ class Dashboard extends React.Component {
       <div>
         <h1>Connected!</h1>
         <span>
-          <h3>{this.state.account}</h3>
+          <h3>{this.props.account}</h3>
           <h4>
             {this.state.balance} {this.state.fucksDetails.symbol}
           </h4>
         </span>
+      </div>
+    );
+  }
+
+  renderNetwork() {
+    if (!this.props.network) return;
+    return (
+      <div>
+        <h2>{this.props.network.name}</h2>
       </div>
     );
   }
@@ -90,6 +108,7 @@ class Dashboard extends React.Component {
         <h1>{this.state.fucksDetails.name}</h1>
         <h2>({this.state.fucksDetails.symbol})</h2>
         <h1>{this.renderAccount()}</h1>
+        <h1>{this.renderNetwork()}</h1>
         <div>
           <h1>Details</h1>
           <div>

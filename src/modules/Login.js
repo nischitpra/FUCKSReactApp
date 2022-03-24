@@ -2,6 +2,8 @@ import React from "react";
 import { ethers } from "ethers";
 
 import DataBridge from "../helpers/DataBridge";
+import Dashboard from "./Dashboard";
+import DashboardFunc from "./DashboardFunc";
 
 class Login extends React.Component {
   fucksapp = window.fucksapp;
@@ -16,7 +18,7 @@ class Login extends React.Component {
 
     this._setAccount = this._setAccount.bind(this);
     this.syncWalletData = this.syncWalletData.bind(this);
-    this.getWalletConnectionStatus = this._getWalletConnectionStatus.bind(this);
+    this.getWalletConnectionStatus = this._syncWalletAccount.bind(this);
     this.getWalletAccount = this._getWalletAccount.bind(this);
     this.connectWallet = this.connectWallet.bind(this);
     this.renderLogin = this.renderLogin.bind(this);
@@ -36,19 +38,26 @@ class Login extends React.Component {
 
   async syncWalletData() {
     const refreshWalletInterval = setInterval(async () => {
-      await this._getWalletConnectionStatus(this.fucksapp.account);
-      const network = await this._getWalletNetwork()
-      this.
+      await this._syncWalletAccount(this.fucksapp.account);
+      await this._syncWalletNetwork(this.fucksapp.network);
     }, 1000);
     this.setState({ refreshWalletInterval });
   }
 
-  async _getWalletConnectionStatus(_account) {
+  async _syncWalletAccount(_account) {
     const account = await this._getWalletAccount();
     if (_account != account) {
       this._setAccount(account, _account);
     }
     return account;
+  }
+
+  async _syncWalletNetwork(_network) {
+    const network = await this._getWalletNetwork();
+    if (_network != network) {
+      this._setNetwork(network, _network);
+    }
+    return network;
   }
 
   async connectWallet() {
@@ -61,8 +70,13 @@ class Login extends React.Component {
     return (await this.fucksapp.wallet.listAccounts())[0];
   }
 
-  async _getWalletNetwork(){
-    return (await this.fucksapp.wallet.getNetwork())
+  async _getWalletNetwork() {
+    try {
+      return await this.fucksapp.wallet.getNetwork();
+    } catch (e) {
+      // network changed. ether.js suggests reload of website on network change
+      window.location.reload();
+    }
   }
 
   _setAccount(account, prevAccount) {
@@ -88,7 +102,8 @@ class Login extends React.Component {
   }
 
   render() {
-    return this.fucksapp.account ? this.props.postLogin : this.renderLogin();
+    // return this.fucksapp.account ? <Dashboard account={this.fucksapp.account} network={this.fucksapp.network} /> : this.renderLogin();
+    return this.fucksapp.account ? <DashboardFunc /> : this.renderLogin();
   }
 }
 
