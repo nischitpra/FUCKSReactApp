@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 
 import DataBridge from "../helpers/DataBridge";
@@ -37,17 +37,21 @@ const DashboardFunc = () => {
     if (fucksapp.account) {
       handleAccountChange();
     }
-  },[]);
+  }, []);
 
-  const resetState = () => setState(initialState);
-  const updateState = (update) => setState({ ...state, ...update });
+  function resetState() {
+    setState(initialState);
+  }
+  function updateState(update) {
+    setState({ ...state, ...update });
+  }
 
-  const handleAccountChange = async () => {
+  async function handleAccountChange() {
     resetState();
     getBasicDetails();
-  };
+  }
 
-  const getBasicDetails = async () => {
+  async function getBasicDetails() {
     const name = (await state.fucksContract.name()).toString();
     const decimals = parseInt((await state.fucksContract.decimals()).toString());
     const symbol = (await state.fucksContract.symbol()).toString();
@@ -55,18 +59,18 @@ const DashboardFunc = () => {
     const balance = (await state.fucksContract.balanceOf(fucksapp.account)).div(10 ** decimals).toString();
     updateState({ balance, fucksDetails: { name, symbol, decimals, totalSupply: totalSupply.toString() } });
     return balance;
-  };
+  }
 
-  const transferToken = async () => {
+  async function transferToken() {
     const receiverAddress = document.getElementById("receiver_address").value;
     const tokenAmount = document.getElementById("token_amount").value;
     const unsingedTxn = await state.fucksContract.populateTransaction.transfer(receiverAddress, tokenAmount);
     console.log(receiverAddress, tokenAmount);
     const res = await fucksapp.wallet.getSigner().sendTransaction(unsingedTxn);
     console.log(res);
-  };
+  }
 
-  const renderAccount = () => {
+  function renderAccount() {
     return (
       <div>
         <h1>Connected!</h1>
@@ -78,18 +82,18 @@ const DashboardFunc = () => {
         </span>
       </div>
     );
-  };
+  }
 
-  const renderNetwork = () => {
+  function renderNetwork() {
     if (!fucksapp.network) return;
     return (
       <div>
         <h2>{fucksapp.network.name}</h2>
       </div>
     );
-  };
+  }
 
-  const renderDashboard = () => {
+  function renderDashboard() {
     return (
       <div>
         <Safe />
@@ -115,7 +119,7 @@ const DashboardFunc = () => {
         </div>
       </div>
     );
-  };
+  }
 
   return <div>{renderDashboard()}</div>;
 };
