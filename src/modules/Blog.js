@@ -17,6 +17,34 @@ const Blog = () => {
     blogContract: new ethers.Contract(TOKEN_ADDRESS, abi, fucksapp.wallet),
   };
 
+  (new ethers.utils.Interface()).encodeFunctionData()
+
+  /**
+   * const masterContractAddress = '0x...';
+const safeOwners: string[] =  ['0x...', '0x...', etc];
+const threshold = 3;
+
+// gnosisSafeAbi is the Gnosis Safe ABI in JSON format,
+// you can find an example here: https://github.com/gnosis/safe-deployments/blob/main/src/assets/v1.1.1/gnosis_safe.json#L16
+const gnosisInterface = new Interface(gnosisSafeAbi);
+const safeSetupData = gnosisInterface.encodeFunctionData('setup', [
+  safeOwners, 
+  threshold,
+  '0x0000000000000000000000000000000000000000',
+  '0x',
+  '0x0000000000000000000000000000000000000000',
+  '0x0000000000000000000000000000000000000000',
+  '0',
+  '0x0000000000000000000000000000000000000000',
+]);
+
+// safeContractFactory is an instance of the "Contract" type from Ethers JS
+// see https://docs.ethers.io/v5/getting-started/#getting-started--contracts
+// for more details.
+// You're going to need the address of a Safe contract factory and the ABI,
+// which can be found here: https://github.com/gnosis/safe-deployments/blob/main/src/assets/v1.1.1/proxy_factory.json#L16
+const proxy = await safeContractFactory.functions.createProxy(masterContractAddress, safeSetupData);
+   */
   const [state, setState] = useState(initialState);
 
   useEffect(() => {
