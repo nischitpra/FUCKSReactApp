@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 
 import DataBridge from "../helpers/DataBridge";
 import Safe from "./Safe";
+import Blog from "./Blog";
 
 const DashboardFunc = () => {
   const fucksapp = window.fucksapp;
@@ -117,6 +118,7 @@ const DashboardFunc = () => {
             <button onClick={transferToken}>Send {state.fucksDetails.symbol}</button>
           </div>
         </div>
+        <Blog />
       </div>
     );
   }
