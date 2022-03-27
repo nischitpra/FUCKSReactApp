@@ -20,7 +20,7 @@ const Blog = () => {
   (new ethers.utils.Interface()).encodeFunctionData()
 
   /**
-   * const masterContractAddress = '0x...';
+   * const masterContractAddress = '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2';
 const safeOwners: string[] =  ['0x...', '0x...', etc];
 const threshold = 3;
 
@@ -32,7 +32,7 @@ const safeSetupData = gnosisInterface.encodeFunctionData('setup', [
   threshold,
   '0x0000000000000000000000000000000000000000',
   '0x',
-  '0x0000000000000000000000000000000000000000',
+  '0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4',
   '0x0000000000000000000000000000000000000000',
   '0',
   '0x0000000000000000000000000000000000000000',
@@ -43,7 +43,7 @@ const safeSetupData = gnosisInterface.encodeFunctionData('setup', [
 // for more details.
 // You're going to need the address of a Safe contract factory and the ABI,
 // which can be found here: https://github.com/gnosis/safe-deployments/blob/main/src/assets/v1.1.1/proxy_factory.json#L16
-const proxy = await safeContractFactory.functions.createProxy(masterContractAddress, safeSetupData);
+const proxy = await safeContractFactory.functions.createProxy(masterContractAddress, safeSetupData, (new Date()).getTime());
    */
   const [state, setState] = useState(initialState);
 
