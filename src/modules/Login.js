@@ -2,7 +2,6 @@ import React from "react";
 import { ethers } from "ethers";
 
 import DataBridge from "../helpers/DataBridge";
-import Dashboard from "./Dashboard";
 import DashboardFunc from "./DashboardFunc";
 
 class Login extends React.Component {
@@ -102,8 +101,7 @@ class Login extends React.Component {
   }
 
   render() {
-    // return this.fucksapp.account ? <Dashboard account={this.fucksapp.account} network={this.fucksapp.network} /> : this.renderLogin();
-    return this.fucksapp.account ? <DashboardFunc /> : this.renderLogin();
+    return this.fucksapp.account && this.fucksapp.network ? <DashboardFunc /> : this.renderLogin();
   }
 }
 

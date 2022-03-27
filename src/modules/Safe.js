@@ -22,19 +22,19 @@ class Safe extends React.Component {
   }
 
   async getScore() {
-    const space = "yam.eth";
+    const space = "daouniverse.eth";
     const strategies = [
       {
         name: "erc20-balance-of",
         params: {
-          address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-          symbol: "DAI",
-          decimals: 18,
+          address: "0xBDA762F6f8f093949A68f98d2a4b0C79CA6008c8",
+          symbol: "FUCKS",
+          decimals: 2,
         },
       },
     ];
-    const network = "1";
-    const voters = ["0xa478c2975ab1ea89e8196811f51a7b7ade33eb11", "0xeF8305E140ac520225DAf050e2f71d5fBcC543e7", "0x1E1A51E25f2816335cA436D65e9Af7694BE232ad"];
+    const network = this.fucksapp.network.chainId;
+    const voters = [this.fucksapp.account, "0x3a86E9C1947f9ff49Abf2bCC3301008165636a5D"];
     const blockNumber = await window.fucksapp.wallet.getBlockNumber();
 
     const score = await snapshot.utils.getScores(space, strategies, network, voters, blockNumber);
