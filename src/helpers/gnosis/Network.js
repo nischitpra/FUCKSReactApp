@@ -6,7 +6,7 @@ const getChainId = () => {
 
 export default {
   getSafesForOwner: async (ownerAddress) => {
-    const response = await fetch(`${gnosis.api[getChainId()]}/api/v1/owners/${ownerAddress}/safes/`, {
+    const response = await fetch(gnosis.api.OWNER_SAFES(ownerAddress), {
       method: "GET",
       headers: headers.acceptJson,
     });
@@ -14,7 +14,7 @@ export default {
     return (await response.json()).safes || [];
   },
   getSafeDetails: async (safeAddress) => {
-    const response = await fetch(`${gnosis.api[getChainId()]}/api/v1/safes/${safeAddress}/`, {
+    const response = await fetch(gnosis.api.SAFE_DETAILS(safeAddress), {
       method: "GET",
       headers: headers.acceptJson,
     });
