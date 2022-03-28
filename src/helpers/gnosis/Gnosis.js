@@ -1,24 +1,21 @@
 import { ethers } from "ethers";
 
 // methods to setup safe
-import safeAbi from "../abi/gnosis/safe.json";
+import safeAbi from "../../abi/gnosis/safe.json";
 // interaction with contract
-import proxyFactoryAbi from "../abi/gnosis/proxy_factory.json";
-import fallbackAbi from "../abi/gnosis/fallback_handler.json";
+import proxyFactoryAbi from "../../abi/gnosis/proxy_factory.json";
+import fallbackAbi from "../../abi/gnosis/fallback_handler.json";
 
-import Txn from "../helpers/Txn";
+import Txn from "../Txn";
 
 class Gnosis {
-  fucksapp = window.fucksapp;
-  databridge = this.fucksapp.databridge;
-
   constructor() {
     this.init();
   }
 
   init() {
     this.safeInterface = new ethers.utils.Interface(safeAbi.abi);
-    this.contractFactory = new ethers.Contract(this._getFactoryAddress(), proxyFactoryAbi.abi, this.fucksapp.wallet);
+    this.contractFactory = new ethers.Contract(this._getFactoryAddress(), proxyFactoryAbi.abi, window.fucksapp.wallet);
   }
 
   async createSafe(owners, threshold) {
@@ -29,7 +26,7 @@ class Gnosis {
       this._getSafeSetupData(owners, threshold),
       new Date().getTime(),
       {
-        gasLimit: 1000000,
+        gasLimit: 500000,
       }
     );
     console.log(res);
@@ -50,19 +47,19 @@ class Gnosis {
   }
 
   _getFactoryAddress() {
-    const address = proxyFactoryAbi.networkAddresses[this.fucksapp.network.chainId];
+    const address = proxyFactoryAbi.networkAddresses[window.fucksapp.network.chainId];
     if (!address) throw "Network not supported";
     return address;
   }
 
   _getSafeAddress() {
-    const address = safeAbi.networkAddresses[this.fucksapp.network.chainId];
+    const address = safeAbi.networkAddresses[window.fucksapp.network.chainId];
     if (!address) throw "Network not supported";
     return address;
   }
 
   _getFallbackAddress() {
-    const address = fallbackAbi.networkAddresses[this.fucksapp.network.chainId];
+    const address = fallbackAbi.networkAddresses[window.fucksapp.network.chainId];
     if (!address) throw "Network not supported";
     return address;
   }

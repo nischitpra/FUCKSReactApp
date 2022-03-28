@@ -7,9 +7,6 @@ import Blog from "./Blog";
 import Snapshot from "./Snapshot";
 
 const DashboardFunc = () => {
-  const fucksapp = window.fucksapp;
-  const databridge = fucksapp.databridge;
-
   const TOKEN_ADDRESS = "0xBDA762F6f8f093949A68f98d2a4b0C79CA6008c8";
   const abi = [
     "function name() public view returns (string)",
@@ -27,7 +24,7 @@ const DashboardFunc = () => {
 
   const initialState = {
     TOKEN_ADDRESS,
-    fucksContract: new ethers.Contract(TOKEN_ADDRESS, abi, fucksapp.wallet),
+    fucksContract: new ethers.Contract(TOKEN_ADDRESS, abi, window.fucksapp.wallet),
     fucksDetails: {},
     balance: undefined,
   };
@@ -35,8 +32,8 @@ const DashboardFunc = () => {
   const [state, setState] = useState(initialState);
 
   useEffect(() => {
-    databridge.sub(DataBridge.TOPIC.ACCOUNT_CHANGE, handleAccountChange);
-    if (fucksapp.account) {
+    window.fucksapp.databridge.sub(DataBridge.TOPIC.ACCOUNT_CHANGE, handleAccountChange);
+    if (window.fucksapp.account) {
       handleAccountChange();
     }
   }, []);
@@ -58,7 +55,7 @@ const DashboardFunc = () => {
     const decimals = parseInt((await state.fucksContract.decimals()).toString());
     const symbol = (await state.fucksContract.symbol()).toString();
     const totalSupply = (await state.fucksContract.totalSupply()).toString();
-    const balance = (await state.fucksContract.balanceOf(fucksapp.account)).div(10 ** decimals).toString();
+    const balance = (await state.fucksContract.balanceOf(window.fucksapp.account)).div(10 ** decimals).toString();
     updateState({ balance, fucksDetails: { name, symbol, decimals, totalSupply: totalSupply.toString() } });
     return balance;
   }
@@ -68,7 +65,7 @@ const DashboardFunc = () => {
     const tokenAmount = document.getElementById("token_amount").value;
     const unsingedTxn = await state.fucksContract.populateTransaction.transfer(receiverAddress, tokenAmount);
     console.log(receiverAddress, tokenAmount);
-    const res = await fucksapp.wallet.getSigner().sendTransaction(unsingedTxn);
+    const res = await window.fucksapp.wallet.getSigner().sendTransaction(unsingedTxn);
     console.log(res);
   }
 
@@ -77,7 +74,7 @@ const DashboardFunc = () => {
       <div>
         <h1>Connected!</h1>
         <span>
-          <h3>{fucksapp.account}</h3>
+          <h3>{window.fucksapp.account}</h3>
           <h4>
             {state.balance} {state.fucksDetails.symbol}
           </h4>
@@ -87,10 +84,10 @@ const DashboardFunc = () => {
   }
 
   function renderNetwork() {
-    if (!fucksapp.network) return;
+    if (!window.fucksapp.network) return;
     return (
       <div>
-        <h2>{fucksapp.network.name}</h2>
+        <h2>{window.fucksapp.network.name}</h2>
       </div>
     );
   }

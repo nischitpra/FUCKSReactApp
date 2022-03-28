@@ -1,6 +1,9 @@
 import React from "react";
 
-import Gnosis from "../helpers/Gnosis";
+import Gnosis from "../helpers/gnosis/Gnosis";
+
+import network from "../helpers/gnosis/Network";
+import DataBridge from "../helpers/DataBridge";
 
 const styles = {
   textarea: {
@@ -13,7 +16,30 @@ class Safe extends React.Component {
     super(props);
     this.gnosis = new Gnosis();
 
+    this.initialState = {
+      safes: [],
+      safeDetails: undefined,
+    };
+
+    this.state = { ...this.initialState };
+
+    this.resetState = this.resetState.bind(this);
     this.createSafe = this.createSafe.bind(this);
+    this.getSafesForOwner = this.getSafesForOwner.bind(this);
+    this.getSafeDetails = this.getSafeDetails.bind(this);
+    this.renderSafes = this.renderSafes.bind(this);
+  }
+
+  componentDidMount() {
+    window.fucksapp.databridge.sub(DataBridge.TOPIC.ACCOUNT_CHANGE, this.handleAccountChange);
+  }
+
+  resetState() {
+    this.setState(this.initialState);
+  }
+
+  async handleAccountChange() {
+    // this.resetState();
   }
 
   async createSafe() {
@@ -26,6 +52,30 @@ class Safe extends React.Component {
     const res = await this.gnosis.createSafe(owners, threshold);
   }
 
+  async getSafesForOwner() {
+    const safes = await network.getSafesForOwner(window.fucksapp.account);
+    this.setState({ safes });
+  }
+
+  async getSafeDetails(safeAddress) {
+    const safeDetails = await network.getSafeDetails(safeAddress);
+    console.log(safeDetails);
+    this.setState({ safeDetails });
+  }
+
+  renderSafes() {
+    const safes = [];
+    for (let i = 0; i < this.state.safes.length; i++) {
+      const safe = this.state.safes[i];
+      safes.push(
+        <div key={safe}>
+          <button onClick={() => this.getSafeDetails(safe)}>{safe}</button>
+        </div>
+      );
+    }
+    return safes;
+  }
+
   render() {
     return (
       <div>
@@ -36,6 +86,9 @@ class Safe extends React.Component {
           <input id="safe_vote_threshold" type="number" />
           <br />
           <button onClick={this.createSafe}>Create Safe</button>
+          <button onClick={this.getSafesForOwner}>Get Safe</button>
+          {this.renderSafes()}
+          {JSON.stringify(this.state.safeDetails)}
         </div>
       </div>
     );

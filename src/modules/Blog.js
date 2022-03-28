@@ -4,13 +4,15 @@ import ReactMarkdown from "react-markdown";
 
 import DataBridge from "../helpers/DataBridge";
 
-
 const Blog = () => {
   const fucksapp = window.fucksapp;
   const databridge = fucksapp.databridge;
 
   const TOKEN_ADDRESS = "0xc998dea8fbe6feeaa95a7c1099c41936ce42b7f5";
-  const abi = ["function setBlog(string memory content) public", "function getBlog(address writer) public view returns (string memory)"];
+  const abi = [
+    "function setBlog(string memory content) public",
+    "function getBlog(address writer) public view returns (string memory)",
+  ];
 
   const initialState = {
     TOKEN_ADDRESS,
@@ -60,7 +62,8 @@ const Blog = () => {
     <div>
       <h1>Blog</h1>
       <textarea id="writeBlog" />
-      <button onClick={saveBlog}>Save Blog</button><br/>
+      <button onClick={saveBlog}>Save Blog</button>
+      <br />
       {renderBlog()}
     </div>
   );

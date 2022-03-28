@@ -5,15 +5,12 @@ import DataBridge from "../helpers/DataBridge";
 import DashboardFunc from "./DashboardFunc";
 
 class Login extends React.Component {
-  fucksapp = window.fucksapp;
-  databridge = this.fucksapp.databridge;
-
   constructor(props) {
     super(props);
 
     this.state = {};
 
-    this.fucksapp.wallet = new ethers.providers.Web3Provider(window.ethereum);
+    window.fucksapp.wallet = new ethers.providers.Web3Provider(window.ethereum);
 
     this._setAccount = this._setAccount.bind(this);
     this.syncWalletData = this.syncWalletData.bind(this);
@@ -37,8 +34,8 @@ class Login extends React.Component {
 
   async syncWalletData() {
     const refreshWalletInterval = setInterval(async () => {
-      await this._syncWalletAccount(this.fucksapp.account);
-      await this._syncWalletNetwork(this.fucksapp.network);
+      await this._syncWalletAccount(window.fucksapp.account);
+      await this._syncWalletNetwork(window.fucksapp.network);
     }, 1000);
     this.setState({ refreshWalletInterval });
   }
@@ -60,18 +57,18 @@ class Login extends React.Component {
   }
 
   async connectWallet() {
-    const accounts = await this.fucksapp.wallet.send("eth_requestAccounts", []);
+    const accounts = await window.fucksapp.wallet.send("eth_requestAccounts", []);
     this._setAccount(accounts[0]);
     return accounts[0];
   }
 
   async _getWalletAccount() {
-    return (await this.fucksapp.wallet.listAccounts())[0];
+    return (await window.fucksapp.wallet.listAccounts())[0];
   }
 
   async _getWalletNetwork() {
     try {
-      return await this.fucksapp.wallet.getNetwork();
+      return await window.fucksapp.wallet.getNetwork();
     } catch (e) {
       // network changed. ether.js suggests reload of website on network change
       window.location.reload();
@@ -79,16 +76,16 @@ class Login extends React.Component {
   }
 
   _setAccount(account, prevAccount) {
-    this.fucksapp.prevAccount = prevAccount;
-    this.fucksapp.account = account;
-    this.databridge.pub(DataBridge.TOPIC.ACCOUNT_CHANGE, { prevAccount, account });
+    window.fucksapp.prevAccount = prevAccount;
+    window.fucksapp.account = account;
+    window.fucksapp.databridge.pub(DataBridge.TOPIC.ACCOUNT_CHANGE, { prevAccount, account });
     this.forceUpdate();
   }
 
   _setNetwork(network, prevNetwork) {
-    this.fucksapp.prevNetwork = prevNetwork;
-    this.fucksapp.network = network;
-    this.databridge.pub(DataBridge.TOPIC.NETWORK_CHANGE, { prevNetwork, network });
+    window.fucksapp.prevNetwork = prevNetwork;
+    window.fucksapp.network = network;
+    window.fucksapp.databridge.pub(DataBridge.TOPIC.NETWORK_CHANGE, { prevNetwork, network });
     this.forceUpdate();
   }
 
@@ -101,7 +98,7 @@ class Login extends React.Component {
   }
 
   render() {
-    return this.fucksapp.account && this.fucksapp.network ? <DashboardFunc /> : this.renderLogin();
+    return window.fucksapp.account && window.fucksapp.network ? <DashboardFunc /> : this.renderLogin();
   }
 }
 
