@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 
 import DataBridge from "../helpers/DataBridge";
 import DashboardFunc from "./DashboardFunc";
+import {gnosis} from "../Constants"
 
 class Login extends React.Component {
   constructor(props) {
@@ -52,6 +53,9 @@ class Login extends React.Component {
     const network = await this._getWalletNetwork();
     if (_network != network) {
       this._setNetwork(network, _network);
+      if(!gnosis.baseapi[network.chainId]) {
+        alert("Network not supported!")
+      }
     }
     return network;
   }
