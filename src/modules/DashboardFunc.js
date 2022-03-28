@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import DataBridge from "../helpers/DataBridge";
 import Safe from "./Safe";
 import Blog from "./Blog";
+import Snapshot from "./Snapshot";
 
 const DashboardFunc = () => {
   const fucksapp = window.fucksapp;
@@ -98,6 +99,7 @@ const DashboardFunc = () => {
     return (
       <div>
         <Safe />
+        <Snapshot />
         <h1>{state.fucksDetails.name}</h1>
         <h2>({state.fucksDetails.symbol})</h2>
         <h1>{renderAccount()}</h1>
