@@ -5,6 +5,7 @@ import DataBridge from "../helpers/DataBridge";
 import Safe from "./Safe";
 import Blog from "./Blog";
 import Snapshot from "./Snapshot";
+import Token from "./Token";
 
 const DashboardFunc = () => {
   const TOKEN_ADDRESS = "0xBDA762F6f8f093949A68f98d2a4b0C79CA6008c8";
@@ -24,7 +25,11 @@ const DashboardFunc = () => {
 
   const initialState = {
     TOKEN_ADDRESS,
-    fucksContract: new ethers.Contract(TOKEN_ADDRESS, abi, window.fucksapp.wallet),
+    fucksContract: new ethers.Contract(
+      TOKEN_ADDRESS,
+      abi,
+      window.fucksapp.wallet
+    ),
     fucksDetails: {},
     balance: undefined,
   };
@@ -32,7 +37,10 @@ const DashboardFunc = () => {
   const [state, setState] = useState(initialState);
 
   useEffect(() => {
-    window.fucksapp.databridge.sub(DataBridge.TOPIC.ACCOUNT_CHANGE, handleAccountChange);
+    window.fucksapp.databridge.sub(
+      DataBridge.TOPIC.ACCOUNT_CHANGE,
+      handleAccountChange
+    );
     if (window.fucksapp.account) {
       handleAccountChange();
     }
@@ -52,20 +60,39 @@ const DashboardFunc = () => {
 
   async function getBasicDetails() {
     const name = (await state.fucksContract.name()).toString();
-    const decimals = parseInt((await state.fucksContract.decimals()).toString());
+    const decimals = parseInt(
+      (await state.fucksContract.decimals()).toString()
+    );
     const symbol = (await state.fucksContract.symbol()).toString();
     const totalSupply = (await state.fucksContract.totalSupply()).toString();
-    const balance = (await state.fucksContract.balanceOf(window.fucksapp.account)).div(10 ** decimals).toString();
-    updateState({ balance, fucksDetails: { name, symbol, decimals, totalSupply: totalSupply.toString() } });
+    const balance = (
+      await state.fucksContract.balanceOf(window.fucksapp.account)
+    )
+      .div(10 ** decimals)
+      .toString();
+    updateState({
+      balance,
+      fucksDetails: {
+        name,
+        symbol,
+        decimals,
+        totalSupply: totalSupply.toString(),
+      },
+    });
     return balance;
   }
 
   async function transferToken() {
     const receiverAddress = document.getElementById("receiver_address").value;
     const tokenAmount = document.getElementById("token_amount").value;
-    const unsingedTxn = await state.fucksContract.populateTransaction.transfer(receiverAddress, tokenAmount);
+    const unsingedTxn = await state.fucksContract.populateTransaction.transfer(
+      receiverAddress,
+      tokenAmount
+    );
     console.log(receiverAddress, tokenAmount);
-    const res = await window.fucksapp.wallet.getSigner().sendTransaction(unsingedTxn);
+    const res = await window.fucksapp.wallet
+      .getSigner()
+      .sendTransaction(unsingedTxn);
     console.log(res);
   }
 
@@ -95,6 +122,7 @@ const DashboardFunc = () => {
   function renderDashboard() {
     return (
       <div>
+        <Token />
         <Safe />
         <Snapshot />
         <h1>{state.fucksDetails.name}</h1>
@@ -114,7 +142,9 @@ const DashboardFunc = () => {
           <div>
             <input id="receiver_address" placeholder="receiver address" />
             <input id="token_amount" placeholder="token amount" />
-            <button onClick={transferToken}>Send {state.fucksDetails.symbol}</button>
+            <button onClick={transferToken}>
+              Send {state.fucksDetails.symbol}
+            </button>
           </div>
         </div>
         <Blog />
